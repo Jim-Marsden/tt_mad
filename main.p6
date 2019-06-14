@@ -49,7 +49,7 @@ sub get_story_body(Str $file_name)
 sub MAIN()
 {
 
-    my @hash_array, %hhh = generate_hash_mdl (find_mdl()[0]);
+    my (@hash_array, %hhh) = generate_hash_mdl (find_mdl()[0]);
     put @hash_array;
     return 0;
     my %hash_array =
