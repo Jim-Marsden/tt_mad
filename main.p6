@@ -5,12 +5,9 @@ sub generate_verbs($story, $sign, $new_thing)
 {
     my $rv = $story;
     loop {
-        if $rv ~~ s/$sign/$new_thing/
-        {}
-        else
-        {
-            last;
-        }
+        if $rv !~~ s/$sign/$new_thing/
+        {last;}
+        
     }
     return $rv;
 }
@@ -84,26 +81,43 @@ sub generate_hash_mdl(Str $file_name)
 
 sub get_story_body(Str $file_name)
 {
+my $fh = open "$file_name", :r;
+    my $contents = $fh.slurp;
+    $fh.close;
 
+    my $rv = $contents;
+
+    my @match =  $contents ~~ m/ \< .+ \> / ;
+    if @match # > 0
+    {
+        if $rv.contains('<')
+        {
+
+            my $rv_bracket_index = $rv.index('{');
+            $rv.=substr($rv_bracket_index + 1);
+        }
+
+        if $rv.contains('>')
+        {
+            my $rv_bracket_index = $rv.rindex('}');
+            $rv.=substr(0, $rv_bracket_index);
+        }
+
+        return $rv;
+    }
+    else
+    {
+        return Nil;
+    }
 }
 
 sub MAIN()
 {
 
-   my %hash_array =
-            name1=>Nil,
-            animal1=>Nil,
-            place1=>Nil,
-            adj1=>Nil,
-            adj2=>Nil,
-            noun1=>Nil,
-            verb1=>Nil,
-            verb2=>Nil,
-    ;
+   my %hash_array = generate_hash_mdl (find_mdl()[0]);
 
-    %hash_array = generate_hash_mdl (find_mdl()[0]);
-
-    my $test :=
+    my $test = get_story_body (find_mdl()[0]);
+    my $test2 :=
 Q"There was someone named name1 who was an animal1. name1 was really quite adj1 and adj2.
 The animal1 was verb1 in the place1. Until one day they verb2 and then name1 were never
 seen agin because the noun1.";
