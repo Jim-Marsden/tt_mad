@@ -30,13 +30,40 @@ sub find_mdl()
 
 sub generate_hash_mdl(Str $file_name)
 {
-    sub parse_hash(Str $str) {
-        #my $thing = $str ~~ / \{ / ;
-        my @lstr = split ",", $str;
-        put @lstr[0];
     
-        
-        #put $str ~~ m/ .+ %% ',' $/;
+
+    sub parse_hash(Str $str) {
+        my $rv = $str;
+        my %hash_rv;
+        if $rv.contains('{')
+        {
+
+            my $rv_bracket_index = $rv.index('{');
+            $rv.=substr($rv_bracket_index + 1);
+        }
+
+        if $rv.contains('}')
+        {
+            my $rv_bracket_index = $rv.rindex('}');
+            $rv.=substr(0, $rv_bracket_index);
+        }
+
+        while $rv.contains(", ")
+        {
+            my $rv_comma_index = $rv.index(", ");
+            my $temp_str = $rv.substr(0, $rv_comma_index);
+            $rv.=substr($rv_comma_index + 1);
+            
+            %hash_rv{$temp_str} = "Nil";
+
+            say  $temp_str;
+            
+        }
+
+        return %hash_rv;
+
+        #say $rv;
+
     }
     my $fh = open "$file_name", :r;
     my $contents = $fh.slurp;
@@ -45,12 +72,14 @@ sub generate_hash_mdl(Str $file_name)
     my @match =  $contents ~~ m/ \{ .+ \} / ;
     if @match # > 0
     {
-        parse_hash(@match[0].Str);
+        return parse_hash(@match[0].Str);
+    }
+    else 
+    {
+        return Nil;
     }
     
     
-    
-    return @match;
 }
 
 sub get_story_body(Str $file_name)
@@ -61,9 +90,7 @@ sub get_story_body(Str $file_name)
 sub MAIN()
 {
 
-    my @my_array = generate_hash_mdl (find_mdl()[0]);
-    return 0;
-    my %hash_array =
+   my %hash_array =
             name1=>Nil,
             animal1=>Nil,
             place1=>Nil,
@@ -73,6 +100,8 @@ sub MAIN()
             verb1=>Nil,
             verb2=>Nil,
     ;
+
+    %hash_array = generate_hash_mdl (find_mdl()[0]);
 
     my $test :=
 Q"There was someone named name1 who was an animal1. name1 was really quite adj1 and adj2.
