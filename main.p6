@@ -19,26 +19,38 @@ sub find_mdl()
 {
     my @mdl_files;
     for dir() -> $file {
-        if $file.Str().ends-with('.mdl')
+	if $file.Str().ends-with('.mdl')
         {
             @mdl_files.push($file.Str())
         }
     }
+    
     return @mdl_files;
 }
 
 sub generate_hash_mdl(Str $file_name)
 {
+    sub parse_hash(Str $str) {
+        #my $thing = $str ~~ / \{ / ;
+        my @lstr = split ",", $str;
+        put @lstr[0];
+    
+        
+        #put $str ~~ m/ .+ %% ',' $/;
+    }
     my $fh = open "$file_name", :r;
     my $contents = $fh.slurp;
     $fh.close;
 
     my @match =  $contents ~~ m/ \{ .+ \} / ;
-
-    my %hhh = Thing => "body";
-    #put @match;
-    #put +@match;
-    return @match, %hhh;
+    if @match # > 0
+    {
+        parse_hash(@match[0].Str);
+    }
+    
+    
+    
+    return @match;
 }
 
 sub get_story_body(Str $file_name)
@@ -49,8 +61,7 @@ sub get_story_body(Str $file_name)
 sub MAIN()
 {
 
-    my (@hash_array, %hhh) = generate_hash_mdl (find_mdl()[0]);
-    put @hash_array;
+    my @my_array = generate_hash_mdl (find_mdl()[0]);
     return 0;
     my %hash_array =
             name1=>Nil,
