@@ -59,6 +59,10 @@ sub generate_hash_mdl(Str $file_name)
             say  $temp_str;
             
         }
+	if $rv.chars > 0
+	{
+		%hash_rv{$rv} = "Nil";
+	}
 
         return %hash_rv;
 
